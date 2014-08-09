@@ -67,15 +67,15 @@ egret_h5.startGame = function () {
 
 
     //设置屏幕适配策略
-    var container = new egret.EqualToFrame();
-    var content = egret.Browser.getInstance().isMobile ? new egret.FixedWidth() : new egret.NoScale();
-    var policy = new egret.ResolutionPolicy(container, content);
-    egret.StageDelegate.getInstance().setDesignSize(480, 800, policy);
+//    var container = new egret.EqualToFrame();
+//    var content = (context.deviceType == egret.MainContext.DEVICE_MOBILE) ? new egret.FixedWidth() : new egret.NoScale();
+//    var policy = new egret.ResolutionPolicy(container, content);
+    egret.StageDelegate.getInstance().setDesignSize(520, 650);
 
     context.stage = new egret.Stage(canvas.width, canvas.height);
 
     //WebGL是egret的Beta特性，默认关闭
-    if(false){// egret.WebGLUtils.checkCanUseWebGL()) {
+    if(egret.WebGLUtils.checkCanUseWebGL()){// egret.WebGLUtils.checkCanUseWebGL()) {
         context.rendererContext = new egret.WebGLRenderer(canvas);
     }
     else {

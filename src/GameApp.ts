@@ -31,7 +31,6 @@ class GameApp extends egret.DisplayObjectContainer{
      * 加载进度界面
      */
     private loadingView:LoadingUI;
-    private touchEvent:TouchEventTest;
 
     public constructor() {
         super();
@@ -39,16 +38,19 @@ class GameApp extends egret.DisplayObjectContainer{
     }
 
     private onAddToStage(event:egret.Event){
+        //注入自定义的素材解析器
+        egret.Injector.mapClass("egret.gui.IAssetAdapter", AssetAdapter);
+        //注入自定义的皮肤解析器
+        egret.Injector.mapClass("egret.gui.ISkinAdapter", SkinAdapter);
+
+        egret.Profiler.getInstance().run();
+
         //设置加载进度界面
         this.loadingView  = new LoadingUI();
-        this.touchEvent = new TouchEventTest();
         this.stage.addChild(this.loadingView);
- 
         //初始化Resource资源加载库
         RES.addEventListener(RES.ResourceEvent.CONFIG_COMPLETE,this.onConfigComplete,this);
         RES.loadConfig("resource/resource.json","resource/");
-        //打开性能面板
-        //egret.Profiler.getInstance().run();
 
     }
 
@@ -81,64 +83,15 @@ class GameApp extends egret.DisplayObjectContainer{
         }
     }
 
-    private textContainer:egret.Sprite;
     /**
      * 创建游戏场景
      */
-    private createGameScene():void{
+    private createGameScene():void {
+        var appContainer:game.AppContainer = new game.AppContainer();
+        this.addChild(appContainer);
+        console.log("createGameScreen start");
 
-        var sky:egret.Bitmap = this.createBitmapByName("bgImage");
-        this.addChild(sky);
-        var stageW:number = this.stage.stageWidth;
-        var stageH:number = this.stage.stageHeight;
-        sky.width = stageW;
-        sky.height = stageH;
-
-        var topMask:egret.Shape = new egret.Shape();
-        topMask.graphics.beginFill(0xa2a2a2, 0.5);
-        topMask.graphics.drawRect(0, 0, stageW, stageH);
-        topMask.graphics.endFill();
-        topMask.width = stageW;
-        topMask.height = stageH;
-        this.addChild(topMask);
-
-        var icon:egret.Bitmap = this.createBitmapByName("egretIcon");
-        icon.anchorX = icon.anchorY = 0.5;
-        this.addChild(icon);
-        icon.x = stageW / 2;
-        icon.y = stageH / 2 - 60;
-        icon.scaleX = 0.55;
-        icon.scaleY = 0.55;
-
-        var colorLabel:egret.TextField = new egret.TextField();
-        colorLabel.x = stageW / 2;
-        colorLabel.y = stageH / 2 + 50;
-        colorLabel.anchorX = colorLabel.anchorY = 0.5;
-        colorLabel.textColor = 0xffffff;
-        colorLabel.textAlign = "center";
-        colorLabel.text = "Num to Num";
-        colorLabel.size = 22;
-        this.addChild(colorLabel);
-
-        var textContainer:egret.Sprite = new egret.Sprite();
-        textContainer.anchorX = textContainer.anchorY = 0.5;
-        this.addChild(textContainer);
-        textContainer.x = stageW / 2;
-        textContainer.y = stageH / 2 + 100;
-        textContainer.alpha = 0;
-
-        this.textContainer = textContainer;
-
-        this.stage.addChild(this.touchEvent); 
-    }
-    /**
-     * 根据name关键字创建一个Bitmap对象。name属性请参考resources/resource.json配置文件的内容。
-     */
-    private createBitmapByName(name:string):egret.Bitmap {
-        var result:egret.Bitmap = new egret.Bitmap();
-        var texture:egret.Texture = RES.getRes(name);
-        result.texture = texture;
-        return result;
+        game.ApplicationFacade.getInstance().startUp(appContainer);
     }
 }
 

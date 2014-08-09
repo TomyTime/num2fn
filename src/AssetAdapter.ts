@@ -24,43 +24,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/// <reference path="../core/Logger.ts"/>
-/// <reference path="../core/MainContext.ts"/>
-/// <reference path="../core/Ticker.ts"/>
-/// <reference path="../texture/Texture.ts"/>
-var egret;
-(function (egret) {
-    var DEBUG = (function () {
-        function DEBUG() {
+
+
+class AssetAdapter implements egret.gui.IAssetAdapter{
+
+    /**
+     * 解析素材
+     * @method egret.gui.DefaultAssetAdapter#getAsset
+     * @param source {any} 待解析的新素材标识符
+     * @param compFunc {Function} 解析完成回调函数，示例：compFunc(content:any,source:any):void;
+     * 回调参数content接受两种类型：DisplayObject或Texture。
+     * @param thisObject {any} compFunc的this引用
+     * @param oldContent any 旧的内容对象,传入值有可能为null。
+     * 对于某些类型素材，例如MovieClip，可以重用传入的显示对象,只修改其数据再返回。
+     */
+    public getAsset(source:any,compFunc:Function,thisObject:any,oldContent:any):void{
+
+        function onGetRes(data:any):void{
+            compFunc.call(thisObject,data,source);
         }
 
-        /**
-        * 跟踪渲染主循环过程
-        * @param command 0,停止主循环; 1,执行一次主循环 2,正常循环渲染
-        * @constructor
-        */
-        DEBUG.TRACE_RENDER_LOOP = function (command) {
-            if (typeof command === "undefined") { command = 0; }
-            var ticker = egret.Ticker.getInstance();
-            var context = egret.MainContext.instance;
-            switch (command) {
-                case 0:
-                    ticker.unregister(context["renderLoop"], context);
-                    break;
-                case 1:
-                    context["renderLoop"]();
-                    break;
-                case 2:
-                    ticker.register(context["renderLoop"], context);
-                    break;
+        var content:any = source;
+        if(source.prototype){
+            content = new source();
+        }
+        if(content instanceof egret.DisplayObject||content instanceof egret.Texture){
+            compFunc.call(thisObject,content,source);
+        }
+        else if(typeof(source)=="string"){
+            if(RES.hasRes(source)){
+                RES.getResAsync(source,onGetRes,this);
             }
-        };
-        DEBUG.DRAW_IMAGE = true;
+            else{
+                RES.getResByUrl(source,onGetRes,this);
+            }
 
-        DEBUG.ADD_EVENT_LISTENER = true;
 
-        DEBUG.SCALE_BITMAP_SET_SCALE_GRID = true;
-        return DEBUG;
-    })();
-    egret.DEBUG = DEBUG;
-})(egret || (egret = {}));
+        }
+        else{
+            compFunc.call(thisObject,content,source);
+        }
+    }
+
+
+}
