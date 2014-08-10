@@ -12,7 +12,7 @@ module game {
             return [
                 GridProxy.INSERT_TILE ,
                 GridProxy.MERGED_TILE,
-                GridProxy.MOVE_TILE ,
+                GridProxy.SELECT_TILE,
                 GridProxy.REMOVE_TILE ,
                 GridProxy.RESET_TILE ,
                 GameProxy.GAME_RESULT
@@ -26,17 +26,10 @@ module game {
                     this.mainGameUI.createTile(<TileVO><any> data);
                     break;
                 }
-
                 case GridProxy.MERGED_TILE:{
                     this.mainGameUI.mergedTile(<TileVO><any> data);
                     break;
                 }
-
-                case GridProxy.MOVE_TILE:{
-                    this.mainGameUI.moveTile(<TileVO><any> data);
-                    break;
-                }
-
                 case GridProxy.REMOVE_TILE:{
                     this.mainGameUI.removeTile(<TileVO><any> data);
                     break;
@@ -47,6 +40,11 @@ module game {
                 }
                 case GameProxy.GAME_RESULT:{
                     this.showResultWindow(<boolean><any> data);
+                    break;
+                }
+                case GridProxy.SELECT_TILE:{
+                    console.log("MainGameMediator ==> handleNotification ==> select_tile");
+                    this.mainGameUI.selectTile(<TileVO><any> data);
                     break;
                 }
             }

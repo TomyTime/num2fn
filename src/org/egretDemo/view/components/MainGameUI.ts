@@ -29,7 +29,9 @@ module game {
             tile.y = tileVO.y * (tile.height + this.gap) + tile.height/2;
             tile.includeInLayout = false;
             tile.visible = false;
+            tile.addEventListener(egret.TouchEvent.TOUCH_TAP, this.getTilePosition, tile);
             this.tileGroup.addElement(tile);
+
             var showTile:Function = function():void{
                 tile.visible = true;
                 if(tileVO.merged){
@@ -39,6 +41,12 @@ module game {
                 }
             };
             egret.setTimeout(showTile , this , 100);   //延迟显示格子，保证其他的格子移动完成后显示
+        }
+
+        public getTilePosition(tile:TileVO):TileVO{
+            console.log("getTilePosition");
+            console.log(tile);
+            return tile;
         }
 
         /**
@@ -52,6 +60,15 @@ module game {
                 }
             }
             return null;
+        }
+
+        /**
+         * 选择格子
+         * @param tileVO
+         */
+        public selectTile(tileVO:TileVO):void{
+            var tile:TileUI = this.getTileUI(tileVO.x, tileVO.y);
+            tile.selectTile();
         }
 
         /**
@@ -86,19 +103,6 @@ module game {
             if(tileUI){
                 this.tileGroup.removeElement(tileUI);
                 ObjectPool.getPool("game.TileUI").returnObject(tileUI);
-            }
-        }
-
-        /**
-         * 移动一个格子
-         */
-        public moveTile(tileVO:TileVO):void{
-            var tile:TileUI = this.getTileUI(tileVO.previousPosition.x , tileVO.previousPosition.y);
-            if(tile){
-                tile.location.x = tileVO.x;
-                tile.location.y = tileVO.y;
-                tile.playmove( tileVO.x * (tile.width+this.gap)+tile.width/2 ,
-                        tileVO.y * (tile.height+this.gap)+tile.height/2 );
             }
         }
 

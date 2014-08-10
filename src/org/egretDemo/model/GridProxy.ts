@@ -12,6 +12,7 @@ module game {
         public static MOVE_TILE:string = "move_tile";
         public static INSERT_TILE:string = "insert_tile";
         public static REMOVE_TILE:string = "remove_tile";
+        public static SELECT_TILE:string = "select_tile";
 
         /**
          * 合并格子
@@ -19,7 +20,7 @@ module game {
         public static MERGED_TILE:string = "merged_tile";
 
         private cells:Array<any> = [];
-        private startTiles:number = 2;
+        private startTiles:number = 16;
         private playerTurn:boolean = true;
         private size:number = CommonData.size;
 
@@ -44,16 +45,17 @@ module game {
         }
 
         /**
-         * 向某一方向移动
-         * @param direction 0: 上, 1: 右, 2:下, 3: 左
+         * 选择格子
          */
-        public move(direction:number):void{
+        public select(data):void{
             var won:boolean = false;
             var moved:boolean = false;
             var score:number = 0;
-
+            console.log("GridProxy ==> select()");
+            var tile = this.getTileByPoint(data);
+            console.log(tile);
             this.prepareTiles();
-            var tiles:Array<any> = this.buildMoveOrder(direction);
+            /*var tiles:Array<any> = this.buildMoveOrder(direction);
             for (var i:number = 0; i < tiles.length; i++) {
                 var tile:TileVO = <TileVO><any> (tiles[i]);
                 if(tile){
@@ -84,8 +86,8 @@ module game {
                         moved = true;
                     }
                 }
-            }
-            this.sendNotification(GameCommand.USER_MOVED , {"won":won , "moved":moved , "score":score});
+            }*/
+            this.sendNotification(GameCommand.USER_SELECTED , {"won":won , "moved":moved , "score":score});
         }
 
         /**
@@ -152,6 +154,13 @@ module game {
             }
         }
 
+        private getTileByPoint(point:any):TileVO{
+            var x = Math.floor(point.x / 106);
+            var y = Math.floor((point.y - 165) / 106);
+            console.log("x = " + x + ", y = " + y);
+            return this.cellContent(x, y);
+        }
+
         /**
          * 添加游戏开始的格子
          */
@@ -170,8 +179,24 @@ module game {
                 var tile:TileVO = new TileVO();
                 tile.x = position.x;
                 tile.y = position.y;
-                tile.value = Math.random() < 0.9 ? 2 : 4;
+                var min = -2;
+                var max = 4;
+                tile.value = this.getRandomValue(-4, 4);
                 this.insertTile(tile);
+            }
+        }
+
+        /**
+         * 获取指定范围内的随机数
+         * 不要0
+         * 如果一直随机返回 0 ，那就去买彩票吧 ^_^
+         */
+        private getRandomValue(min:number, max:number):number{
+            var ret =  Math.floor(min + Math.random()*(max-min));
+            if(ret == 0 ){
+                return this.getRandomValue(min, max);
+            }else{
+                return ret;
             }
         }
 

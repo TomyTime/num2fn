@@ -1,0 +1,15 @@
+{
+    "file": "number.png"
+    ,
+    "frames": {
+        "number_-1": {"x":0, "y":0, "w":105, "h":105, "offX":0,"offY":0,"sourceW":105,"sourceH":105},
+        "number_-2": {"x":0, "y":106, "w":105, "h":105, "offX":0,"offY":0,"sourceW":105,"sourceH":105},
+        "number_-3": {"x":0, "y":212, "w":105, "h":105, "offX":0,"offY":0,"sourceW":105,"sourceH":105},
+        "number_-4": {"x":0, "y":318, "w":105, "h":105, "offX":0,"offY":0,"sourceW":105,"sourceH":105},
+        "number_1": {"x":106, "y":0, "w":105, "h":105, "offX":0,"offY":0,"sourceW":105,"sourceH":105},
+        "number_2": {"x":106, "y":106, "w":105, "h":105, "offX":0,"offY":0,"sourceW":105,"sourceH":105},
+        "number_3": {"x":106, "y":212, "w":105, "h":105, "offX":0,"offY":0,"sourceW":105,"sourceH":105},
+        "number_4": {"x":106, "y":318, "w":105, "h":105, "offX":0,"offY":0,"sourceW":105,"sourceH":105},
+        "number_selected": {"x":106, "y":0, "w":105, "h":105, "offX":0,"offY":0,"sourceW":105,"sourceH":105}
+    }
+}

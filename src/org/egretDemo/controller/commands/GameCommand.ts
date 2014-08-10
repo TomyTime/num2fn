@@ -24,12 +24,26 @@ module game {
         public static USER_MOVE:string = "user_move";
 
         /**
+         * 执行选择
+         * @type {string}
+         */
+        public static USER_SELECT:string = "user_select";
+
+        /**
+         * 执行选择后的事务
+         * @type {string}
+         */
+        public static USER_SELECTED:string = "user_selected";
+
+        /**
          * 注册消息
          */
         public register():void{
             this.facade.registerCommand(GameCommand.GAME_RESET , GameCommand); //注册游戏重置消息
-            this.facade.registerCommand(GameCommand.USER_MOVED , GameCommand); //注册移动后消息
-            this.facade.registerCommand(GameCommand.USER_MOVE , GameCommand);  //注册将要移动的消息
+//            this.facade.registerCommand(GameCommand.USER_MOVED , GameCommand); //注册移动后消息
+//            this.facade.registerCommand(GameCommand.USER_MOVE , GameCommand);  //注册将要移动的消息
+            this.facade.registerCommand(GameCommand.USER_SELECTED , GameCommand);  //注册选中完毕的消息
+            this.facade.registerCommand(GameCommand.USER_SELECT , GameCommand);  //注册将要选中的消息
         }
 
         public execute(notification:puremvc.INotification):void{
@@ -43,7 +57,7 @@ module game {
                     gridProxy.addStartTiles();
                     break;
                 }
-                case GameCommand.USER_MOVED:{
+                /*case GameCommand.USER_MOVED:{
                     gameProxy.updateScore(data["score"]);
                     if(!data["won"]){
                         if(data["moved"]){
@@ -59,6 +73,14 @@ module game {
                 }
                 case GameCommand.USER_MOVE:{
                     gridProxy.move(<number><any> data);
+                    break;
+                }*/
+                case GameCommand.USER_SELECTED:{
+
+                    break;
+                }
+                case GameCommand.USER_SELECT:{
+                    gridProxy.select(data);
                     break;
                 }
             }

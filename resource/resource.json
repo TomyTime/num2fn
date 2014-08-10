@@ -1,12 +1,22 @@
 {
-"resources":
-	[
-		{"name":"bgImage","type":"image","url":"assets/bg.jpg"},
-		{"name":"egretIcon","type":"image","url":"assets/egret_icon.png"}
-	],
-
-"groups":
-	[
-        {"name":"preload","keys":"egretIcon"}
-	]
+    "resources":
+        [
+            {
+                "url":"assets/number.json",
+                "name":"number",
+                "type":"sheet"
+            },
+            {
+                "url":"assets/source.json",
+                "name":"source",
+                "type":"sheet"
+            }
+        ],
+    "groups":
+        [
+            {
+                "name":"preload",
+                "keys":"number,source"
+            }
+        ]
 }

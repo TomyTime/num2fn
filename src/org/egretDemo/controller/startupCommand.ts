@@ -8,6 +8,7 @@ module game {
             super();
         }
         public initializeMacroCommand():void{
+            console.log("start up ");
             this.addSubCommand(ControllerPrepCommand);
             this.addSubCommand(ModelPrepCommand);
             this.addSubCommand(ViewPrepCommand);

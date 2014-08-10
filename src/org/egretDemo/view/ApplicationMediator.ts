@@ -7,12 +7,14 @@ module game {
         public constructor(viewComponent:any){
             super(ApplicationMediator.NAME, viewComponent);
 
+            this.main.addEventListener(egret.TouchEvent.TOUCH_TAP , this.mouseTapHandle , this)
+
             //为PC和移动端设置不同的移动策略
-            if(egret.MainContext.deviceType != egret.MainContext.DEVICE_MOBILE)
+           /* if(egret.MainContext.deviceType != egret.MainContext.DEVICE_MOBILE)
             {
                 var self = this;
-                document.addEventListener("keydown",function(event:KeyboardEvent){
-                    switch (event.keyCode) {
+                document.addEventListener("click",function(event:MouseEvent){
+                    *//*switch (event.keyCode) {
                         case 38:
                             self.doMove(0);
                             break;
@@ -25,24 +27,22 @@ module game {
                         case 37:
                             self.doMove(3);
                             break;
-                    }
+                    }*//*
+                    self.doClick();
                 });
             }
             else
             {
-                this.main.addEventListener(egret.TouchEvent.TOUCH_BEGIN , this.mouseDownHandle , this)
-            }
+//                this.main.addEventListener(egret.TouchEvent.TOUCH_BEGIN , this.mouseDownHandle , this)
+                this.main.addEventListener(egret.TouchEvent.TOUCH_TAP , this.mouseTapHandle , this)
+            }*/
         }
 
         private downPoint:egret.Point;
         private movePoint:egret.Point;
-        private mouseDownHandle(event:egret.TouchEvent):void
-        {
-            egret.gui.UIGlobals.stage.addEventListener(egret.TouchEvent.TOUCH_MOVE,this.stage_mouseMoveHandler,this);
-            egret.gui.UIGlobals.stage.addEventListener(egret.TouchEvent.TOUCH_END,this.stage_mouseUpHandler,this);
-            egret.gui.UIGlobals.stage.addEventListener(egret.Event.LEAVE_STAGE,this.stage_mouseUpHandler,this);
-
+        private mouseTapHandle(event:egret.TouchEvent):void{
             this.downPoint = this.main.globalToLocal(event.stageX, event.stageY);
+            this.doClick();
         }
 
         private needMove:boolean;
@@ -67,38 +67,10 @@ module game {
                 this.stage_mouseUpHandler,
                 this);
             if(this.needMove){
-                this.updateWhenMouseUp();
+//                this.updateWhenMouseUp();
                 this.needMove = false;
             }
         }
-
-        /**
-         * 移动设备上，判断移动方向
-         */
-        private updateWhenMouseUp():void
-        {
-            var p:egret.Point = this.main.globalToLocal(this.movePoint.x, this.movePoint.y ,egret.Point.identity);
-            var offSetX:number = p.x - this.downPoint.x;
-            var offSetY:number = p.y - this.downPoint.y;
-
-            if(offSetY<0 && Math.abs(offSetY)>Math.abs(offSetX))  //上
-            {
-                this.doMove(0);
-            }
-            else if(offSetX>0 && offSetX>Math.abs(offSetY))  //右
-            {
-                this.doMove(1);
-            }
-            else if(offSetY>0 && offSetY>Math.abs(offSetX))  //下
-            {
-                this.doMove(2);
-            }
-            else if(offSetX<0 && Math.abs(offSetX)>Math.abs(offSetY))  //左
-            {
-                this.doMove(3);
-            }
-        }
-
 
         /**
          * 移动格子
@@ -121,6 +93,14 @@ module game {
                         this.sendNotification(GameCommand.USER_MOVE, 3);    //左
                         break;
                 }
+                this.lastMoveTime = egret.getTimer();
+            }
+        }
+
+        private doClick():void{
+            console.log("ApplicationMediator ==> doClick()");
+            if(CommonData.isRunning && (egret.getTimer() - this.lastMoveTime)>=150) {
+                this.sendNotification(GameCommand.USER_SELECT,  this.downPoint);
                 this.lastMoveTime = egret.getTimer();
             }
         }

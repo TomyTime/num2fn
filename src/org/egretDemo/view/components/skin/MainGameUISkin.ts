@@ -85,5 +85,11 @@ module game {
             }
         }
 
+        /**
+         * 选中数字背景
+         */
+        private selectTile():void{
+
+        }
     }
 }

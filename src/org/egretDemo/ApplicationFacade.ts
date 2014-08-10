@@ -23,6 +23,7 @@ module game {
          * @param	rootView	-	PureMVC应用程序的根视图root，包含其它所有的View Componet
          */
         public startUp(rootView:egret.DisplayObjectContainer):void{
+            console.log("startUp 启动PueMVc");
             this.sendNotification(ApplicationFacade.STARTUP, rootView);
             this.removeCommand(ApplicationFacade.STARTUP); //PureMVC初始化完成，注销STARUP命令
         }

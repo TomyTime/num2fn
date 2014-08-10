@@ -45,7 +45,8 @@ module game {
         }
 
         private updateValue():void{
-            var mi:number = Math.log(this._value)/Math.log(2);
+            var mi:number = this.value;
+
             this.source = "number.number_"+mi;
         }
 
@@ -77,6 +78,14 @@ module game {
             egret.Tween.get(this).to({x:xTo , y:yTo} , 100).call(function():void{
                 self.dispatchEvent(new egret.Event("moveComplete"));
             } , this);
+        }
+
+        /**
+         * 选中格子背景
+         */
+        public selectTile():void{
+            console.log("TileUI ==> selectTile()");
+            this.source = "number.number_selected";
         }
     }
 }
