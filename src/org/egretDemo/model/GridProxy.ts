@@ -51,10 +51,15 @@ module game {
             var won:boolean = false;
             var moved:boolean = false;
             var score:number = 0;
-            console.log("GridProxy ==> select()");
-            var tile = this.getTileByPoint(data);
-            console.log(tile);
+            console.log("GridProxy ==> selectTileUI()");
+            //var tile = this.getTileByPoint(data);
+            console.log(data);
+            if(this.checkTile(data)){
+                data.selectTile();
+            }
+            data.selectTile();
             this.prepareTiles();
+
             /*var tiles:Array<any> = this.buildMoveOrder(direction);
             for (var i:number = 0; i < tiles.length; i++) {
                 var tile:TileVO = <TileVO><any> (tiles[i]);
@@ -154,11 +159,32 @@ module game {
             }
         }
 
-        private getTileByPoint(point:any):TileVO{
-            var x = Math.floor(point.x / 106);
-            var y = Math.floor((point.y - 165) / 106);
-            console.log("x = " + x + ", y = " + y);
-            return this.cellContent(x, y);
+        private checkTile(data):boolean{
+            var flag:boolean = false;
+            var position = data.location;
+            if(position != undefined){
+
+            }
+            return flag;
+        }
+
+        /**
+         * 获取当前所有选中的格子
+         * @returns {Array<any>}
+         */
+        private getSelectedTile(nowSel:TileUI):Array<any>{
+            var arr:Array<any> = [];
+            for (var x:number = 0; x < this.size; x++) {
+                for (var y:number = 0; y < this.size; y++) {
+                    var tile:TileVO = <TileVO><any> (this.cells[x][y]);
+                    if(tile.hasOwnProperty('source')){
+                        tile.merged = false;
+                        tile.previousPosition = {"x":tile.x , "y":tile.y};
+                    }
+                }
+            }
+
+            return arr;
         }
 
         /**

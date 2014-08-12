@@ -29,7 +29,7 @@ module game {
             tile.y = tileVO.y * (tile.height + this.gap) + tile.height/2;
             tile.includeInLayout = false;
             tile.visible = false;
-            tile.addEventListener(egret.TouchEvent.TOUCH_TAP, this.getTilePosition, tile);
+           // tile.addEventListener(egret.TouchEvent.TOUCH_TAP, this.getTilePosition, tile);
             this.tileGroup.addElement(tile);
 
             var showTile:Function = function():void{

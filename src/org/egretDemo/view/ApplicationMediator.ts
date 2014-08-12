@@ -42,7 +42,7 @@ module game {
         private movePoint:egret.Point;
         private mouseTapHandle(event:egret.TouchEvent):void{
             this.downPoint = this.main.globalToLocal(event.stageX, event.stageY);
-            this.doClick();
+            this.doClick(event);
         }
 
         private needMove:boolean;
@@ -97,10 +97,10 @@ module game {
             }
         }
 
-        private doClick():void{
+        private doClick(event:egret.Event):void{
             console.log("ApplicationMediator ==> doClick()");
             if(CommonData.isRunning && (egret.getTimer() - this.lastMoveTime)>=150) {
-                this.sendNotification(GameCommand.USER_SELECT,  this.downPoint);
+                this.sendNotification(GameCommand.USER_SELECT,  event.target);
                 this.lastMoveTime = egret.getTimer();
             }
         }
