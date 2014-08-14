@@ -6,6 +6,8 @@ module game {
 
         public gap:number = 16;
 
+        private selectedTile:Array<TileUI> = [];
+
         public constructor(){
             super();
             this.skinName = MainGameUISkin;
@@ -43,12 +45,6 @@ module game {
             egret.setTimeout(showTile , this , 100);   //延迟显示格子，保证其他的格子移动完成后显示
         }
 
-        public getTilePosition(tile:TileVO):TileVO{
-            console.log("getTilePosition");
-            console.log(tile);
-            return tile;
-        }
-
         /**
          *获取指定位置的格子
          */
@@ -64,35 +60,69 @@ module game {
 
         /**
          * 选择格子
-         * @param tileVO
+         * @param tileUI
          */
-        public selectTile(tileVO:TileVO):void{
-            var tile:TileUI = this.getTileUI(tileVO.x, tileVO.y);
-            tile.selectTile();
+        public selectTile(selTiles:Array<any>):void{
+            //取消原来的选中状态
+            this.cancelSelected();
+
+            for(var i:number=0, len:number=selTiles.length; i<len; i++){
+                var tileUI = this.getTileUI(selTiles[i].x, selTiles[i].y);
+                tileUI.selectTile();
+            }
         }
 
         /**
-         * 合并格子
+         * @desc 获取当前选中格子的位置信息
+         * @returns {Array<any>}
          */
-        public mergedTile(tileVO:TileVO):void{
-            var tileFrom:TileUI = this.getTileUI(tileVO.previousPosition.x , tileVO.previousPosition.y);
-            var tileTo:TileUI = this.getTileUI(tileVO.x , tileVO.y);
-            if(tileFrom && tileTo){
-                this.tileGroup.setElementIndex(tileFrom,0);  //将要消失的格子沉底，
-                var self:MainGameUI = this;
-                tileFrom.location.x = -1;
-                tileFrom.location.y = -1;
-                tileFrom.playmove(tileVO.x * (tileFrom.width+this.gap)+tileFrom.width/2 ,tileVO.y * (tileFrom.height+this.gap)+tileFrom.height/2 );
-                var moveComplete:Function = function(event:egret.Event):void{
-                    tileFrom.removeEventListener("moveComplete" , moveComplete , self);
-                    if(tileFrom.parent)
-                        self.tileGroup.removeElement(tileFrom);
-                    ObjectPool.getPool("game.TileUI").returnObject(tileFrom);   //回收到对象池
-                    tileTo.value = tileVO.value;
-                    tileTo.playScale(true);
-                };
-                tileFrom.addEventListener("moveComplete" , moveComplete ,this);
+        public getSelectedTilePosition():Array<any>{
+            var pos:Array<any> = [];
+            var selTileUIs:Array<TileUI> = this.getSelectedTiles();
+            for(var i=0,len=selTileUIs.length; i<len; i++){
+                var t:TileUI = selTileUIs[i];
+                pos.push({x: t.x, y: t.y});
             }
+
+            return pos;
+        }
+
+        /**
+         * 获取当前选中的格子
+         */
+        public getSelectedTiles():Array<TileUI>{
+            var ary:Array<TileUI> = [];
+            for (var i:number = 0; i < this.tileGroup.numElements; i++) {
+                var tile:TileUI = <TileUI><any> (this.tileGroup.getElementAt(i));
+                if(this.isSelected(tile)){
+                    ary.push(tile);
+                }
+            }
+            this.selectedTile = ary;
+
+            return ary;
+        }
+
+        /**
+         * @desc 获得当前选中格子的长度
+         * @returns {number}
+         */
+        public getSelectedTilesCount():number{
+            return this.getSelectedTiles().length;
+        }
+
+        /**
+         * @desc 检查指定格子是否被选中
+         * @param tileUI
+         * @returns {boolean}
+         */
+        public isSelected(tileUI:TileUI):boolean{
+            var flag:boolean = false;
+            if(tileUI.source == 'number.number_selected'){
+                flag = true;
+            }
+
+            return flag;
         }
 
         /**
@@ -103,6 +133,13 @@ module game {
             if(tileUI){
                 this.tileGroup.removeElement(tileUI);
                 ObjectPool.getPool("game.TileUI").returnObject(tileUI);
+            }
+        }
+
+        public cancelSelected():void{
+            var selTiles:Array<TileUI> = this.getSelectedTiles();
+            for(var i:number = 0, len:number = selTiles.length; i<len; i++){
+                selTiles[i].unSelect();
             }
         }
 

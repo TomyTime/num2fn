@@ -11,7 +11,6 @@ module game {
         public listNotificationInterests():Array<any>{
             return [
                 GridProxy.INSERT_TILE ,
-                GridProxy.MERGED_TILE,
                 GridProxy.SELECT_TILE,
                 GridProxy.REMOVE_TILE ,
                 GridProxy.RESET_TILE ,
@@ -24,10 +23,6 @@ module game {
             switch(notification.getName()){
                 case GridProxy.INSERT_TILE:{
                     this.mainGameUI.createTile(<TileVO><any> data);
-                    break;
-                }
-                case GridProxy.MERGED_TILE:{
-                    this.mainGameUI.mergedTile(<TileVO><any> data);
                     break;
                 }
                 case GridProxy.REMOVE_TILE:{
@@ -43,8 +38,7 @@ module game {
                     break;
                 }
                 case GridProxy.SELECT_TILE:{
-                    console.log("MainGameMediator ==> handleNotification ==> select_tile");
-                    this.mainGameUI.selectTile(<TileVO><any> data);
+                    this.mainGameUI.selectTile(<Array<any>><any> data);
                     break;
                 }
             }

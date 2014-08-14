@@ -47,52 +47,186 @@ module game {
         /**
          * 选择格子
          */
-        public select(data):void{
+        public select(data:TileUI):void{
             var won:boolean = false;
             var moved:boolean = false;
             var score:number = 0;
-            console.log("GridProxy ==> selectTileUI()");
-            //var tile = this.getTileByPoint(data);
-            console.log(data);
-            if(this.checkTile(data)){
-                data.selectTile();
-            }
-            data.selectTile();
-            this.prepareTiles();
-
-            /*var tiles:Array<any> = this.buildMoveOrder(direction);
-            for (var i:number = 0; i < tiles.length; i++) {
-                var tile:TileVO = <TileVO><any> (tiles[i]);
-                if(tile){
-                    var farthestPosition:any = this.findFarthestPosition({"x":tile.x , "y":tile.y} , direction);
-                    var nextPosition:any = this.getNextPosition(farthestPosition , direction);
-                    var nextTile:TileVO = this.cellContent(nextPosition.x , nextPosition.y);
-                    if(nextTile && nextTile.value == tile.value && !nextTile.merged){ //可以向下合并
-
-                        var newValue:number = tile.value + nextTile.value;
-
-                        this.mergedTile(tile , nextTile);
-
-                        tile.x = nextTile.x;
-                        tile.y = nextTile.y;
-
-                        //更新分数
-                        score += newValue;
-
-                        if(newValue == CommonData.winValue){   //游戏结束
-                            won = true;
-                        }
-                    } else {
-                        this.moveTile(tile , farthestPosition.x , farthestPosition.y);
+            var t:TileVO;
+            var selTiles:Array<any>;
+            if(data.hasOwnProperty('location')){
+                t = this.cellContent(data.location.x, data.location.y);
+                if(this.checkfTile(t)){
+                    t['selected'] = true;
+                }
+                selTiles = this.getSelectedTiles();
+                if(selTiles.length > 1){
+                    if(this.calTilesValue(selTiles)){
+                        //true
+                        //计算结果为0，则消除掉当前选中的格子
+                    }else if(selTiles.length < 5){
+                        this.sendNotification(GridProxy.SELECT_TILE,  selTiles);
+                    }else{
+                        //当前选择格子多于4个
+                        //暂时没有做取消选中
+                        //所以在这里做 超过4个格子，并且计算结果不为0，那么就取消当前选中
+                        //考虑以后加入双击取消选中
+                        //或者重新生成4个格子替代原来的
+                        this.unselectTiles();
+                        this.sendNotification(GridProxy.SELECT_TILE, this.getSelectedTiles());
                     }
+                }else{
+                    this.sendNotification(GridProxy.SELECT_TILE,  selTiles);
+                }
+                //this.sendNotification(GameCommand.USER_SELECTED , {"won":won , "moved":moved , "score":score});
+            }
+            //this.prepareTiles();
 
-                    if(tile.x != tile.previousPosition.x || tile.y != tile.previousPosition.y){  //格子移动了
-                        this.playerTurn = false;
-                        moved = true;
+            //this.sendNotification(GameCommand.USER_SELECTED , {"won":won , "moved":moved , "score":score});
+        }
+
+        /**
+         * @desc 计算当前选中格子的和
+         * 游戏主要数据逻辑
+         * @param selTiles
+         */
+        private calTilesValue(selTiles:Array<any>):boolean{
+            var flag = true;
+
+            return;
+        }
+
+        /**
+         * @desc 检查格子是否能被选中
+         * @param tileUI
+         * @returns {boolean}
+         */
+        public checkfTile(tileVO:TileVO):boolean{
+            var flag:boolean = false;
+            var selTiles:Array<any> = this.getSelectedTiles();
+            var selCount:number = selTiles.length;
+            if(selCount == 0){
+                return true;
+            }else{
+                flag = this.isAtAround(tileVO);
+            }
+
+            return flag;
+        }
+
+        /**
+         * @desc 检查是否有选中的相邻格子
+         * @param tileUI
+         * @returns {boolean}
+         */
+        public isAtAround(tileVO:TileVO):boolean{
+            var flag:boolean = false;
+            var around:any = this.getAroundTiles(tileVO);
+            for(var x in around){
+                var tile = around[x];
+                if(this.isSelected(tile)){
+                    flag = true;
+                    break;
+                }
+            }
+
+            return flag;
+        }
+
+        /**
+         * @desc 获取指定格子的四个方向上的相邻格子
+         * @param tileUI
+         * @returns {any}
+         */
+        public getAroundTiles(tileVO:TileVO):any{
+            var location = {x: tileVO.x, y: tileVO.y};
+            var around:any = {};
+            var tVO:TileVO;
+
+            //left
+            if((location.x - 1) > -1){
+                tVO = this.cellContent(location.x-1, location.y);
+                if(null != tVO){
+                    around['left'] = tVO;
+                }
+            }
+            //top
+            if((location.y - 1) > -1){
+                tVO = this.cellContent(location.x, location.y-1);
+                if(null != tVO){
+                    around['top'] = tVO;
+                }
+            }
+            //right
+            //4目前直接写出来
+            //这里应该是个变量的
+            if((location.x + 1) < 5){
+                tVO = this.cellContent(location.x+1, location.y);
+                if(null != tVO){
+                    around['right'] = tVO;
+                }
+            }
+            //bottom
+            //4目前直接写出来
+            //这里应该是个变量的
+            if((location.y + 1) < 5){
+                tVO = this.cellContent(location.x, location.y+1);
+                if(null != tVO){
+                    around['bottom'] = tVO;
+                }
+            }
+
+            return around;
+        }
+
+        /**
+         * 获取当前选中的格子
+         */
+        public getSelectedTiles():Array<any>{
+            var ary:Array<any> = [];
+            for (var i:number = 0; i < this.size; i++) {
+                var row:Array<any> = this.cells[i];
+                for(var j:number = 0; j<this.size; j++){
+                    if(row[j]['selected'] == true){
+                        ary.push({x: row[j].x, y: row[j].y, value: row[j].value});
                     }
                 }
-            }*/
-            this.sendNotification(GameCommand.USER_SELECTED , {"won":won , "moved":moved , "score":score});
+            }
+
+            return ary;
+        }
+
+        public unselectTiles():void{
+            var pos:Array<any> = this.getSelectedTiles();
+            for(var i:number=0, len:number=pos.length; i<len; i++){
+                this.cellContent(pos[i].x, pos[i].y)['selected'] = false;
+            }
+        }
+
+        /**
+         * @desc 获得当前选中格子的长度
+         * @returns {number}
+         */
+        public getSelectedTilesCount():number{
+            return this.getSelectedTiles().length;
+        }
+
+        /**
+         * @desc 检查指定格子是否被选中
+         * @param tileUI
+         * @returns {boolean}
+         */
+        public isSelected(tileVO:TileVO):boolean{
+            var flag:boolean = false;
+            var selTiles:Array<any> = this.getSelectedTiles();
+            for(var i:number=0, len:number=selTiles.length; i<len; i++){
+                var p = selTiles[i];
+                if(p.x == tileVO.x && p.y == tileVO.y){
+                    flag = true;
+                    break;
+                }
+            }
+
+            return flag;
         }
 
         /**
@@ -162,7 +296,10 @@ module game {
         private checkTile(data):boolean{
             var flag:boolean = false;
             var position = data.location;
+            var x:number = position.x;
+            var y:number = position.y;
             if(position != undefined){
+                //左边
 
             }
             return flag;
@@ -183,7 +320,7 @@ module game {
                     }
                 }
             }
-
+            MainGameUI
             return arr;
         }
 
@@ -295,30 +432,6 @@ module game {
         }
 
         /**
-         * 合并格子
-         * @param tile
-         * @param x
-         * @param y
-         */
-        private mergedTile(tileFrom:TileVO , tileTo:TileVO):void
-        {
-            //创建新格子
-            var mergedTile:TileVO = new TileVO();
-            mergedTile.x = tileTo.x;
-            mergedTile.y = tileTo.y;
-            mergedTile.previousPosition = {x:tileFrom.x , y:tileFrom.y};
-            mergedTile.value = tileFrom.value + tileTo.value;
-            mergedTile.merged = true;
-
-            //更新格子
-            this.cells[tileFrom.x][tileFrom.y] = null;
-            this.cells[tileTo.x][tileTo.y] = mergedTile;
-
-            this.sendNotification(GridProxy.MERGED_TILE , mergedTile.clone());
-        }
-
-
-        /**
          * 移动格子
          */
         private moveTile(tile:TileVO, x:number , y:number):void
@@ -337,6 +450,7 @@ module game {
          * 添加一个格子
          */
         private insertTile(tile:TileVO):void{
+            tile['selected'] = false;
             this.cells[tile.x][tile.y] = tile;
             this.sendNotification(GridProxy.INSERT_TILE , tile.clone());
         }

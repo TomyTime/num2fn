@@ -72,35 +72,10 @@ module game {
             }
         }
 
-        /**
-         * 移动格子
-         * @param direction 方向 0上 1右 2下 3左
-         */
-        private doMove(direction:number):void
-        {
-            if(CommonData.isRunning && (egret.getTimer() - this.lastMoveTime)>=150) {
-                switch (direction) {
-                    case 0:
-                        this.sendNotification(GameCommand.USER_MOVE, 0);    //上
-                        break;
-                    case 1:
-                        this.sendNotification(GameCommand.USER_MOVE, 1);    //右
-                        break;
-                    case 2:
-                        this.sendNotification(GameCommand.USER_MOVE, 2);    //下
-                        break;
-                    case 3:
-                        this.sendNotification(GameCommand.USER_MOVE, 3);    //左
-                        break;
-                }
-                this.lastMoveTime = egret.getTimer();
-            }
-        }
-
         private doClick(event:egret.Event):void{
-            console.log("ApplicationMediator ==> doClick()");
             if(CommonData.isRunning && (egret.getTimer() - this.lastMoveTime)>=150) {
-                this.sendNotification(GameCommand.USER_SELECT,  event.target);
+//                this.sendNotification(GridProxy.SELECT_TILE,  event.target);
+               this.sendNotification(GameCommand.USER_SELECT,  event.target);
                 this.lastMoveTime = egret.getTimer();
             }
         }

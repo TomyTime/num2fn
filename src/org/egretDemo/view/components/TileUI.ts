@@ -84,8 +84,11 @@ module game {
          * 选中格子背景
          */
         public selectTile():void{
-            console.log("TileUI ==> selectTile()");
             this.source = "number.number_selected";
+        }
+
+        public unSelect():void{
+            this.source = "number.number_" + this.value;
         }
     }
 }
