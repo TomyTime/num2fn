@@ -43,7 +43,7 @@ class GameApp extends egret.DisplayObjectContainer{
         //注入自定义的皮肤解析器
         egret.Injector.mapClass("egret.gui.ISkinAdapter", SkinAdapter);
 
-        egret.Profiler.getInstance().run();
+        //egret.Profiler.getInstance().run();
 
         //设置加载进度界面
         this.loadingView  = new LoadingUI();
