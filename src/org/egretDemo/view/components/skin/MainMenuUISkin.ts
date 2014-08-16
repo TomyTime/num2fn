@@ -11,11 +11,16 @@ module game {
         /**
          * 和主机组件匹配的皮肤部件
          */
-        private static _skinParts:Array<string> = ["addLabel","scoreLabel","highScoreLabel","resetButton"];
+        private static _skinParts:Array<string> = ["addLabel","scoreLabel","highScoreLabel","resetButton","timerLabel"];
 
         public get skinParts():Array<string>{
             return MainMenuUISkin._skinParts;
         }
+
+        /**
+         * 游戏计时器
+         */
+        public timerLabel:egret.gui.Label;
 
         /**
          * 加分文本
@@ -61,6 +66,17 @@ module game {
             this.highScoreLabel.top = 40;
             this.addElement(this.highScoreLabel);
 
+            this.timerLabel = new egret.gui.Label();
+            this.timerLabel.text = "30:00";
+            this.timerLabel.size = 20;
+            this.timerLabel.width = 80;
+            this.timerLabel.height = 30;
+            this.timerLabel.textAlign = "center";
+            this.timerLabel.textColor = 0x999999;
+            this.timerLabel.verticalAlign = "middle";
+            this.addElement(this.timerLabel);
+
+
             var group:egret.gui.Group = new egret.gui.Group;
             group.width = 96;
             group.height = 56;
@@ -77,6 +93,7 @@ module game {
             this.scoreLabel.verticalAlign = "middle";
             this.scoreLabel.percentWidth = 100;
             this.scoreLabel.y = 25;
+            this.scoreLabel.top = 34;
             group.addElement(this.scoreLabel);
 
             this.addLabel = new egret.gui.Label();

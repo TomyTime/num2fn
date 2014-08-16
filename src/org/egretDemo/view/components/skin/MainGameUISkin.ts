@@ -84,12 +84,5 @@ module game {
                 this.backGroundGroup.addElement(tile);
             }
         }
-
-        /**
-         * 选中数字背景
-         */
-        private selectTile():void{
-
-        }
     }
 }

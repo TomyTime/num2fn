@@ -36,11 +36,7 @@ module game {
 
             var showTile:Function = function():void{
                 tile.visible = true;
-                if(tileVO.merged){
-                    tile.playScale(true);
-                }else{
-                    tile.playScale(false);
-                }
+                tile.playScale();
             };
             egret.setTimeout(showTile , this , 100);   //延迟显示格子，保证其他的格子移动完成后显示
         }
@@ -118,7 +114,7 @@ module game {
          */
         public isSelected(tileUI:TileUI):boolean{
             var flag:boolean = false;
-            if(tileUI.source == 'number.number_selected'){
+            if(tileUI.source.indexOf('number.number_selected') > -1){
                 flag = true;
             }
 
@@ -137,9 +133,9 @@ module game {
         }
 
         public cancelSelected():void{
-            var selTiles:Array<TileUI> = this.getSelectedTiles();
-            for(var i:number = 0, len:number = selTiles.length; i<len; i++){
-                selTiles[i].unSelect();
+            for (var i:number = 0; i < this.tileGroup.numElements; i++) {
+                var tile:TileUI = <TileUI><any> (this.tileGroup.getElementAt(i));
+                tile.unSelect();
             }
         }
 

@@ -15,7 +15,7 @@ module game {
         }
 
         public listNotificationInterests():Array<any>{
-            return [GameProxy.UPDATE_SCORE , GameProxy.RESET_SCORE];
+            return [GameProxy.UPDATE_SCORE , GameProxy.RESET_SCORE, GameProxy.UPDATE_TIMER];
         }
 
         public handleNotification(notification:puremvc.INotification):void{
@@ -27,10 +27,18 @@ module game {
                     this.mainGameUI.playScoreEffect(data["addScore"]);
                     break;
                 }
-
                 case GameProxy.RESET_SCORE:{
                     this.mainGameUI.scoreLabel.text = "0";
                     break;
+                }
+                case GameProxy.UPDATE_TIMER:{
+                    var t = 30 - data;
+                    if(t < 11){
+                        this.mainGameUI.timerLabel.textColor = 0xFF0000;
+                    }else{
+                        this.mainGameUI.timerLabel.textColor = 0x999999;
+                    }
+                    this.mainGameUI.timerLabel.text = t + ":00";
                 }
             }
         }

@@ -14,6 +14,7 @@ module game {
                 GridProxy.SELECT_TILE,
                 GridProxy.REMOVE_TILE ,
                 GridProxy.RESET_TILE ,
+                GridProxy.UNSELECT_TILE,
                 GameProxy.GAME_RESULT
             ];
         }
@@ -39,6 +40,10 @@ module game {
                 }
                 case GridProxy.SELECT_TILE:{
                     this.mainGameUI.selectTile(<Array<any>><any> data);
+                    break;
+                }
+                case GridProxy.UNSELECT_TILE:{
+                    this.mainGameUI.cancelSelected();
                     break;
                 }
             }

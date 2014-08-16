@@ -53,21 +53,9 @@ module game {
         /**
          * 播放缩放效果 merged是否是合并方块
          */
-        public playScale(merged:boolean = false):void{
-            if(!merged)
-            {
-                this.scaleX = this.scaleY = 0.1;
-                egret.Tween.get(this).to({scaleX:1 , scaleY:1} , 100);
-            }
-            else
-            {
-                var self:TileUI = this;
-                var fun:Function = function(){
-                    egret.Tween.get(self).to({scaleX:1 , scaleY:1} , 80);
-                };
-                this.scaleX = this.scaleY = 1;
-                egret.Tween.get(this).to({scaleX:1.3 , scaleY:1.3} , 80).call(fun , this);
-            }
+        public playScale():void{
+            this.scaleX = this.scaleY = 0.1;
+            egret.Tween.get(this).to({scaleX:1 , scaleY:1} , 100);
         }
 
         /**
@@ -84,11 +72,11 @@ module game {
          * 选中格子背景
          */
         public selectTile():void{
-            this.source = "number.number_selected";
+            this.source = "number.number_selected_"+this.value;
         }
 
         public unSelect():void{
-            this.source = "number.number_" + this.value;
+           this.source = "number.number_" + this.value;
         }
     }
 }

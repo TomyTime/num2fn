@@ -14,6 +14,8 @@ module game {
 
         public static RESET_SCORE:string = "reset_score";
 
+        public static UPDATE_TIMER:string = "update_timer";
+
         private won:boolean = false;
         private over:boolean = false;
 
@@ -48,17 +50,19 @@ module game {
             this.over = false;
             CommonData.isRunning = true;
             this.sendNotification(GameProxy.RESET_SCORE);
+            this.sendNotification(GridProxy.RESET_TIMER);
         }
 
         /**
          * 更新分数
          */
         public updateScore(addScore:number):void{
-            if(addScore != 0){
+            if(CommonData.isRunning == true && addScore != 0){
                 this._score += addScore;
                 if(this._score > this._highScore)
                     this._highScore = this._score;
                 this.sendNotification(GameProxy.UPDATE_SCORE , {"totalScore":this.score , "highScore":this.highScore ,"addScore":addScore});
+                this.sendNotification(GridProxy.RESET_TIMER);
             }
         }
 

@@ -13,16 +13,16 @@ module game {
         public static INSERT_TILE:string = "insert_tile";
         public static REMOVE_TILE:string = "remove_tile";
         public static SELECT_TILE:string = "select_tile";
-
-        /**
-         * 合并格子
-         */
-        public static MERGED_TILE:string = "merged_tile";
+        public static UNSELECT_TILE:string = "unselect_tile";
+        public static RESET_TIMER:string = "reset_timer";
 
         private cells:Array<any> = [];
         private startTiles:number = 16;
         private playerTurn:boolean = true;
         private size:number = CommonData.size;
+        private min = -4;
+        private max = 4;
+//        private logger = new egret.log;
 
         public constructor(){
             super(GridProxy.NAME);
@@ -48,9 +48,6 @@ module game {
          * 选择格子
          */
         public select(data:TileUI):void{
-            var won:boolean = false;
-            var moved:boolean = false;
-            var score:number = 0;
             var t:TileVO;
             var selTiles:Array<any>;
             if(data.hasOwnProperty('location')){
@@ -59,29 +56,24 @@ module game {
                     t['selected'] = true;
                 }
                 selTiles = this.getSelectedTiles();
-                if(selTiles.length > 1){
-                    if(this.calTilesValue(selTiles)){
-                        //true
-                        //计算结果为0，则消除掉当前选中的格子
-                    }else if(selTiles.length < 5){
-                        this.sendNotification(GridProxy.SELECT_TILE,  selTiles);
-                    }else{
-                        //当前选择格子多于4个
-                        //暂时没有做取消选中
-                        //所以在这里做 超过4个格子，并且计算结果不为0，那么就取消当前选中
-                        //考虑以后加入双击取消选中
-                        //或者重新生成4个格子替代原来的
-                        this.unselectTiles();
-                        this.sendNotification(GridProxy.SELECT_TILE, this.getSelectedTiles());
-                    }
-                }else{
-                    this.sendNotification(GridProxy.SELECT_TILE,  selTiles);
-                }
-                //this.sendNotification(GameCommand.USER_SELECTED , {"won":won , "moved":moved , "score":score});
+                this.sendNotification(GridProxy.SELECT_TILE,  selTiles);
             }
-            //this.prepareTiles();
+        }
 
-            //this.sendNotification(GameCommand.USER_SELECTED , {"won":won , "moved":moved , "score":score});
+        /**
+         * @desc 计算游戏分数
+         * @param tiles
+         * @returns {number}
+         */
+        private calScore(tiles:Array<any>):number{
+            var size:number = tiles.length;
+            if(size > 1 && size < 3){
+                return 10;
+            }else if(size > 2 && size < 5){
+                return size * 10;
+            }else{
+                return size * 20;
+            }
         }
 
         /**
@@ -89,10 +81,59 @@ module game {
          * 游戏主要数据逻辑
          * @param selTiles
          */
-        private calTilesValue(selTiles:Array<any>):boolean{
-            var flag = true;
+        public calTilesValue():void{
+            var result:number = 0;
+            var score:number = 0;
+            var selTiles:Array<any> = this.getSelectedTiles();
+            if(CommonData.isRunning == false){
+                this.unselectTiles();
+                this.sendNotification(GridProxy.UNSELECT_TILE);
+                return;
+            }
+            //当前选中格子只有一个或者没有
+            if(selTiles.length < 2){
+                this.unselectTiles();
+                this.sendNotification(GridProxy.UNSELECT_TILE);
+                return;
+            }
+            //当前选中格子大于等于2个以上
+            //开始游戏逻辑运算
+            for(var i:number=0, len:number=selTiles.length; i<len; i++){
+                result += selTiles[i]['value'];
+            }
+            //选中格子相加和为零
+            //消除当前选中格子
+            //重新初始化空余位置格子
+            if(result == 0){
+                this.removeSSuccesseddTiles(selTiles);
+                this.addLeaveTiles(selTiles);
+                score = this.calScore(selTiles);
+                this.sendNotification(GameCommand.USER_CALCULATED, {"won": false, "score": score});
+                this.sendNotification(GridProxy.UNSELECT_TILE);
+            }else{
+                this.unselectTiles();
+                this.sendNotification(GridProxy.UNSELECT_TILE);
+            }
+        }
 
-            return;
+        /**
+         * @desc 填充空余的格子
+         * @param tiles
+         */
+        private addLeaveTiles(tiles:Array<TileVO>):void{
+            for(var i:number=0, len:number=tiles.length; i<len; i++){
+                this.insertTileByPostion({x: tiles[i].x, y: tiles[i].y});
+            }
+        }
+
+        /**
+         * @desc 移除求和为零的选中的格子
+         * @param tiles
+         */
+        private removeSSuccesseddTiles(tiles:Array<TileVO>):void{
+            for(var i:number=0, len:number=tiles.length; i<len; i++){
+                this.removeTile(this.cellContent(tiles[i].x, tiles[i].y));
+            }
         }
 
         /**
@@ -306,25 +347,6 @@ module game {
         }
 
         /**
-         * 获取当前所有选中的格子
-         * @returns {Array<any>}
-         */
-        private getSelectedTile(nowSel:TileUI):Array<any>{
-            var arr:Array<any> = [];
-            for (var x:number = 0; x < this.size; x++) {
-                for (var y:number = 0; y < this.size; y++) {
-                    var tile:TileVO = <TileVO><any> (this.cells[x][y]);
-                    if(tile.hasOwnProperty('source')){
-                        tile.merged = false;
-                        tile.previousPosition = {"x":tile.x , "y":tile.y};
-                    }
-                }
-            }
-            MainGameUI
-            return arr;
-        }
-
-        /**
          * 添加游戏开始的格子
          */
         public addStartTiles():void{
@@ -342,11 +364,17 @@ module game {
                 var tile:TileVO = new TileVO();
                 tile.x = position.x;
                 tile.y = position.y;
-                var min = -2;
-                var max = 4;
-                tile.value = this.getRandomValue(-4, 4);
+                tile.value = this.getRandomValue(this.min, this.max);
                 this.insertTile(tile);
             }
+        }
+
+        private insertTileByPostion(position:any):void{
+            var tile:TileVO = new TileVO();
+            tile.x = position.x;
+            tile.y = position.y;
+            tile.value = this.getRandomValue(this.min, this.max);
+            this.insertTile(tile);
         }
 
         /**

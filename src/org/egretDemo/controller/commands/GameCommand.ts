@@ -16,12 +16,7 @@ module game {
         /**
          * 处理移动后的事务 , body  {score , won , moved}
          */
-        public static USER_MOVED:string = "user_moved";
-
-        /**
-         * 执行移动 , body  0: 上, 1: 右, 2:下, 3: 左
-         */
-        public static USER_MOVE:string = "user_move";
+        public static USER_CALCULATED:string = "user_calculated";
 
         /**
          * 执行选择
@@ -40,8 +35,7 @@ module game {
          */
         public register():void{
             this.facade.registerCommand(GameCommand.GAME_RESET , GameCommand); //注册游戏重置消息
-//            this.facade.registerCommand(GameCommand.USER_MOVED , GameCommand); //注册移动后消息
-//            this.facade.registerCommand(GameCommand.USER_MOVE , GameCommand);  //注册将要移动的消息
+            this.facade.registerCommand(GameCommand.USER_CALCULATED , GameCommand); //注册移动后消息
             this.facade.registerCommand(GameCommand.USER_SELECTED , GameCommand);  //注册选中完毕的消息
             this.facade.registerCommand(GameCommand.USER_SELECT , GameCommand);  //注册将要选中的消息
         }
@@ -57,26 +51,12 @@ module game {
                     gridProxy.addStartTiles();
                     break;
                 }
-                /*case GameCommand.USER_MOVED:{
+                case GameCommand.USER_CALCULATED:{
                     gameProxy.updateScore(data["score"]);
-                    if(!data["won"]){
-                        if(data["moved"]){
-                            gridProxy.computerMove();
-                        }
-                    }else{
-                        gameProxy.setResult(true);
-                    }
-                    if(!gridProxy.movesAvailable()){
-                        gameProxy.setResult(false);
-                    }
                     break;
                 }
-                case GameCommand.USER_MOVE:{
-                    gridProxy.move(<number><any> data);
-                    break;
-                }*/
                 case GameCommand.USER_SELECTED:{
-
+                    gridProxy.calTilesValue();
                     break;
                 }
                 case GameCommand.USER_SELECT:{
