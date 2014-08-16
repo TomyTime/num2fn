@@ -1,7 +1,7 @@
 num2fn
 ======
 
-在豌豆荚里看到过&lt;a href='http://www.wandoujia.com/apps/com.remember.coushu' target='_blank'&gt;消灭数字&lt:/a&gt;这样的游戏
+在豌豆荚里看到过[消灭数字](http://www.wandoujia.com/apps/com.remember.coushu "消灭数字传奇")这样的游戏
 于是用Egret引擎模仿实现了一个类似的游戏
 玩法介绍
 -------
@@ -23,5 +23,5 @@ num2fn
 
 update 2014-8-10
 egret demo
-from https://github.com/f111fei/2048egret
+from [2014Egret](https://github.com/f111fei/2048egret "2014Egret")
 update to egret v1.0.3
