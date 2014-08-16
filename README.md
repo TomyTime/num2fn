@@ -19,8 +19,7 @@ num2fn
 3.  游戏计时器在一次成功的消除数字操作后有延迟
 
 - - -
-<p>update 2014-8-10
-egret demo
-from [2014Egret](https://github.com/f111fei/2048egret "2014Egret")
+<p>update 2014-8-10<br>
+egret from [2014Egret](https://github.com/f111fei/2048egret "2014Egret")<br>
 update to egret v1.0.3
 <p>
